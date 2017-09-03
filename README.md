@@ -10,6 +10,16 @@ so that if it crashes nothing else is effected.
 How do you use it?
 ------------------
 
+### Installation
+
+Install capsulator in your project by running:
+
+```bash
+$ npm i --save capsulator
+```
+
+### API
+
 Here's a small example:
 
 First we need to load a new Capsulator instance:
@@ -22,9 +32,9 @@ Now we can set capsulator's verbosity, i.e. we can say what types of
 messages get logged.
 `logger.verbosity.setVerbosity(logger.verbosity.level.INFO);`
 
-### The Logger
+#### The Logger
 
-#### Verbosity
+##### Verbosity
 
 Using this `setVerbosity` method, we can tell capsulator what we want
 it to tell us. For example, setting it to `logger.verbosity.level.INFO`
@@ -48,7 +58,7 @@ level) it would log everything:
 The lowest level you can set it to is `logger.verbosity.level.SEVERE`,
 which will only log severe messages.
 
-#### Methods
+##### Methods
 
 Now we'll log some basic info about the server, for example:
 
@@ -74,7 +84,7 @@ in the console.
 
 Now we will get to the main bit: defining "what will the server _do_"?
 
-### The Main Bit
+#### The Main Bit
 
 To do this we use the `capsulator.serverRunner.setNewServerFn()` method.
 This sets the function that runs to create a new server. To create a
@@ -103,7 +113,7 @@ socket.on("test event", data => {
 });
 ```
 
-#### Scope
+##### Scope
 
 You'll notice that we haven't defined `http` or `io`. That is true. This
 is because this runs on another thread, so it has a different scope
@@ -148,7 +158,7 @@ capsulator.serverRunner.setNewServerFn(() => {
 
 ---
 
-### Starting up the server
+#### Starting up the server
 
 Now we need to actually start the server up. This can be very simply
 done with the below code:
@@ -161,7 +171,7 @@ capsulator.serverRunner.load.all().then(() => {
 
 This will load the servers, then initialise Capsulator to use port 8000.
 
-#### Warnings about ports
+##### Warnings about ports
 
 Behind the main server, there are multiple other servers. These each
 require ports. These ports are chosen from between
