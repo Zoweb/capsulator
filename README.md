@@ -85,7 +85,7 @@ capsulator.serverRunner.setNewServerFn(() => {
     logger.info("Server is running");
 
     http.use("/", (req, res) => {
-        res.end(<h1>Hello, User.</h1>
+        res.end(`<h1>Hello, User.</h1>
 <h2>You're visiting: ${req.url}</h2>
 <script src="/socket.io/socket.io.js"></script>
 <script>const socket = io();
