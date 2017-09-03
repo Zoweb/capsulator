@@ -14,7 +14,7 @@ How do you use it?
 
 Install capsulator in your project by running:
 
-```bash
+```shell
 $ npm i --save capsulator
 ```
 
