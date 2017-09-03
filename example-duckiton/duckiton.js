@@ -1,31 +1,30 @@
 const capsulator = require("../")();
 
-const log = capsulator.logger.create("capsulator.test.duckiton");
-log.verbosity.setVerbosity(log.verbosity.level.INFO);
+const logger = capsulator.logger.create("capsulator.test.duckiton");
+logger.verbosity.setVerbosity(logger.verbosity.level.INFO);
 
-log.log("Capsulator manual tester.");
-log.log("This app runs a basic server on Capsulator and tests socket/http proxies.");
-log.log("Accessing `http://localhost:8080` will open a website that allows a user to test socket and http settings.\n\n");
+logger.info("Duckiton Game.");
+logger.log("Based on Bingiton.");
+logger.log("Made using Capsulator for multi-server redundancy.\n\n");
 
-capsulator.serverRunner.setNewServerFn((http, io) => {
-    log.info("Server is running");
+// This runs on another thread so it has a different scope (containing http and io as values)
+// However as it is on another thread, we can't call functions from the main thread.
+// You can still do require(), however it will do it relative to the worker's path.
+//
+// `console` and `logger` both log to the console. However, it is recommended to use them
+// sparingly as there is usually two of the below functions running at once, so things can get
+// a bit messed up.
+capsulator.serverRunner.setNewServerFn(() => {
+    logger.info("Server is running");
 
     http.use("/", (req, res) => {
-        res.end(`<h1>Hello, User.</h1>
-<h2>You're visiting: ${req.url}</h2>
-<script src="/socket.io/socket.io.js"></script>
-<script>const socket = io();
-socket.on("test event", data => {
-    console.log("We received an event! It's value is", data);
-    socket.emit("response");
-});
-</script>`);
+
     });
 
     io.on("connection", socket => {
-        log.info("***** NEW SOCKET CONNECTION");
+        logger.info("***** NEW SOCKET CONNECTION");
         socket.emit("test event", "blabla");
-        socket.on("response", () => log.log("YAY!!!!!"));
+        socket.on("response", () => logger.log("YAY!!!!!"));
     });
 });
 
