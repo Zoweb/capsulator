@@ -1,0 +1,32 @@
+{
+  "name": "capsulator",
+  "version": "1.0.0",
+  "description": "Wraps a NodeJS server/socket combination, providing a zero-downtime service.",
+  "main": "capsulator.js",
+  "scripts": {
+    "manual-test": "node manual-test/index"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/zoweb/capsulator.git"
+  },
+  "keywords": [
+    "wrapper",
+    "server",
+    "socket"
+  ],
+  "author": "zoweb",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/zoweb/capsulator/issues"
+  },
+  "homepage": "https://github.com/zoweb/capsulator",
+  "dependencies": {
+    "culinary": "^1.1.6",
+    "express": "^4.15.2",
+    "pretty-time": "^0.2.0",
+    "socket.io": "^1.7.3",
+    "socket.io-client": "^1.7.3",
+    "suspend": "^0.7.0"
+  }
+}
