@@ -18,6 +18,8 @@ Install capsulator in your project by running:
 $ npm i --save capsulator
 ```
 
+(assuming you've got [Node](https://nodejs.org) already installed)
+
 ### API
 
 Here's a small example:
