@@ -7,6 +7,18 @@ your site, so that if one breaks, it can instantly switch to a new
 version. It uses Node's "clusters" to run your code on another process,
 so that if it crashes nothing else is effected.
 
+Important Recent Changes
+------------------------
+
+ - Instead of using `capsulator.serverRunner.load.init(port)`, run
+ `capsulator.serverRunner.port(port)` before doing anything, and remove
+ the `port` argument from `init()`
+
+ - Instead of using events inside the `load` promise, use the
+ `onNewMainServer` event so that events can get reloaded each time you
+ reload the server. Do this by pushing your event listener to the
+ `capsulator.serverRunner.onNewMainServer` array.
+
 How do you use it?
 ------------------
 
@@ -285,6 +297,44 @@ You should not use the events system to do processing on the host
 thread. This means that if that code crashes, the system won't be able
 to recover and you'll need to manually restart your program.
 
+Other Recommended Things
+------------------------
+
+### Auto-updating includes
+
+You should probably have your server runner in a different file and
+use a no-cache require function, so that each time the server reloads,
+your changes will be updated. Here's a way to do this no-cache require:
+
+```js
+function updateRequire(path) {
+    delete require.cache[require.resolve(path)];
+    return require(path);
+}
+
+// run that each time you reload the server:
+...
+capsulator.serverRunner.setNewServerFn(updateRequire("./server-runner"));
+...
+```
+
+### Verbosity spamming
+
+You should really not have your verbosity level set to debug. There is
+really no purpose for you to use it unless there is some bug you're
+trying to fix, in which case you should just create an issue anyway.
+
+The debug verbosity level spams heaps of info that you don't need and
+just clogs your console, hiding any actually useful information.
+
+### Disabling logging
+
+You cannot completely disable logging, however you can turn the
+verbosity down to severe, where only extreme errors will be displayed.
+This is useful if you're making a node module, but you should probably
+leave logging on otherwise.
+
+
 How It Works
 ------------
 
@@ -324,8 +374,25 @@ other than to simplify what already existed.
 Changelog
 ---------
 
+#### v1.3.0
+ **+** Added `onNewMainServer` event<br/>
+ **+** Added external setting for the port<br/>
+ **+** Added recommended and breaking updates section.<br/>
+ **\*** Moved port option to outside of the initialiser<br/>
+ **\*** Fixed bug with constants where they would be undefined always<br/>
+ **\*** Fixed bugs with loading new servers<br/>
+ **\*** Fixed bug where host thought a server had crashed when hadn't
+
+##### Known bugs:
+
+ - Spam-reloading the server causes the processes not to exit
+ - Spam-reloading the server uses lots of CPU
+
+Fix both of these by rate-limiting server reloads.
+
+
 #### v1.2.1
- **\*** Removed `require("culinary")` from capsulator.js
+ **-** Removed unused `require("culinary")` from capsulator.js
 
 #### v1.2.0
  **+** Start changelog<br/>
