@@ -44,6 +44,17 @@ module.exports = function() {
         },
         get portRange() {
             return [].slice.call(config.portRange);
+        },
+
+        get connectionsSinceOpen() {
+            return config.totalConnections;
+        },
+
+        get constants() {
+            return config.serverData;
+        },
+        set constants(value) {
+            config.serverData = value;
         }
     };
 };

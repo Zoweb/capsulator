@@ -136,7 +136,11 @@ overrided). Both of these will prettily log to the console. However, it
 is recommended to use these sparingly, as there is usually two copies of
 the server function running at once, so things can get a bit messed up.
 
-So, this wouldn't work:
+There are ways to work around this issue of scope, including setting
+constants or using events. These are described in the "constants" and
+"events" sections.
+
+So, to sum up: this wouldn't work:
 
 ```js
 const myVariable = 10;
@@ -158,6 +162,10 @@ capsulator.serverRunner.setNewServerFn(() => {
 });
 ```
 
+Or, preferably, use constants (described below)
+
+But you should probably not be logging anything anyway.
+
 ---
 
 #### Starting up the server
@@ -167,11 +175,11 @@ done with the below code:
 
 ```js
 capsulator.serverRunner.load.all().then(() => {
-    capsulator.serverRunner.load.init(8000);
+    capsulator.serverRunner.load.init(8080);
 });
 ```
 
-This will load the servers, then initialise Capsulator to use port 8000.
+This will load the servers, then initialise Capsulator to use port 8080.
 
 ##### Warnings about ports
 
@@ -179,6 +187,103 @@ Behind the main server, there are multiple other servers. These each
 require ports. These ports are chosen from between
 `capsulator.portRange[0]` and `capsulator.portRange[1]`. Make sure these
 ports are available, otherwise things could break!
+
+---
+
+#### Constants
+
+**Note:** If you are planning on using constants for variables that can
+change or for functions, this won't work. See the events system below.
+
+Constants are values that are added to the `constants` variable in the
+server function's scope.
+
+Constants are set by setting the value of `capsulator.constants`. For
+example, setting this to `5` would mean that the `constants` variable in
+the server function's scope would be set to `5`. You can set this to
+anything (including objects to store multiple values) so long as it is
+serialisable. This means that you cannot send functions through
+constants. If you wish to use functions, use events as described below.
+
+---
+
+#### Events
+
+**Note:** If you are planning on using events for constant variables
+that won't change throughout a server function's life, you should use
+constants as described above.
+
+Because the server function has its own scope, you can't run functions
+on the main thread from the server. However, capsulator has a way to fix
+this.
+
+Once the server has loaded (**and only once the server has loaded**) you
+can use its server<->host events system to give the server data or for
+the server to give the host data.
+
+Note that through this event system, you **cannot send functions** as
+all data sent through it is serialised (function cannot be serialised,
+so they are simply removed) then deserialised on the other end.
+
+Once the server has loaded, you can emit and listen for events. For
+example:
+
+```js
+capsulator.serverRunner.load.all().then(() => {
+    capsulator.serverRunner.load.init(8080);
+
+    // now we'll make a loop that sends an event every second
+    let i = 0;
+    setInterval(() => {
+        // here we send an event to the main server.
+        // you can also use `backup()` instead of `current()` to target
+        // that server (or all() to target both)
+
+        capsulator.serverRunner.current().emit("change text", i.toString());
+    }, 1000);
+
+    // we'll also listen to an event to see the two-way system
+    capsulator.serverRunner.current().on("change text response", msg => logger.info(msg));
+});
+```
+
+In the server function, we can make it send and receive events too:
+
+We'll remove it and change it to:
+
+```js
+capsulator.serverRunner.setNewServerFn(() => {
+    logger.info("Server is running");
+
+    // we'll make a string called "textToSend" that we can change
+    let textToSend = "loading...";
+    http.use("/", (req, res) => {
+        res.end(textToSend);
+    });
+
+    // we don't need io.on("connection") because we're not using sockets
+    // however you could use sockets to live update the user's site when
+    // an event runs.
+
+    // we'll listen for the "change text" event
+    host.on("change text", text => {
+        // this will run whenever the host emits the "change text" event
+        logger.info("Changing text to", text);
+        textToSend = text;
+
+        // then we'll emit an event back to the host
+        host.emit("change text response", "it worked");
+    });
+});
+```
+
+And, yes, host is also a part of the custom scope.
+
+#### Important Note
+
+You should not use the events system to do processing on the host
+thread. This means that if that code crashes, the system won't be able
+to recover and you'll need to manually restart your program.
 
 How It Works
 ------------
@@ -210,3 +315,8 @@ The server also sends "SERVER" messages, using the a randomly generated
 ID to make sure that others cannot tap into these messages. These
 "SERVER" messages can do multiple things, including adding and removing
 users, and shutting down the server.
+
+The events system uses both socket and inter-process messaging:
+Communication from the host to the server uses the socket, and from the
+server to the host it uses inter-process messages. This is for no reason
+other than to simplify what already existed.
