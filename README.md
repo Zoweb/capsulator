@@ -320,3 +320,20 @@ The events system uses both socket and inter-process messaging:
 Communication from the host to the server uses the socket, and from the
 server to the host it uses inter-process messages. This is for no reason
 other than to simplify what already existed.
+
+Changelog
+---------
+
+#### v1.2.0
+ **+** Start changelog<br/>
+ **-** Removed old logger
+ **-** Removed `culinary` dependency
+ **-** Remove `suspend` dependency
+
+#### v1.1.0
+ **+** Add event system<br/>
+ **+** Add constants<br/>
+ **+** Add temporary server functions
+
+#### v1.0.0
+ **+** Initial version
