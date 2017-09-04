@@ -4,11 +4,6 @@
  */
 
 module.exports = function() {
-    const app = require("express")();
-    const Http = require("http"), http = Http.Server(app);
-    const io = require("socket.io")(http);
-
-    const culinary = require("culinary");
     const verbosity = require("./lib/console/verbosity.js"); verbosity.setVerbosity("debug");
     const logger = require("./lib/console/logger");
     const log = logger.create("capsulator.main");
@@ -21,13 +16,6 @@ module.exports = function() {
 
     process.on("exit", () => {
         log.severe("Capsulator has exited. To prevent downtime, restart Capsulator.");
-
-        /*culinary.save();
-        culinary.eraseLine().position(5, culinary.dimensions().height - 4).write(culinary.style("WARNING!").spice("red", "bgWhite") +
-            culinary.style(" Capsulator is currently not running! " +
-                "No user can connect to your servers! To prevent downtime, restart Capsulator using the command below:\n").spice("black", "bgWhite") +
-            culinary.style("    $").spice("red") + culinary.style(" node").spice("green") + culinary.style(" ./").spice("yellow"));
-        culinary.restore();*/
     });
 
 

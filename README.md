@@ -324,10 +324,13 @@ other than to simplify what already existed.
 Changelog
 ---------
 
+#### v1.2.1
+ **\*** Removed `require("culinary")` from capsulator.js
+
 #### v1.2.0
  **+** Start changelog<br/>
- **-** Removed old logger
- **-** Removed `culinary` dependency
+ **-** Removed old logger<br/>
+ **-** Removed `culinary` dependency<br/>
  **-** Remove `suspend` dependency
 
 #### v1.1.0
