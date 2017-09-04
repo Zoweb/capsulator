@@ -1,6 +1,6 @@
 {
   "name": "capsulator",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "Wraps a NodeJS server/socket combination, providing a zero-downtime service.",
   "main": "capsulator.js",
   "scripts": {
